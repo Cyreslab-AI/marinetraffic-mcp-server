@@ -1,0 +1,29 @@
+{
+  "name": "marinetraffic-server",
+  "version": "1.0.0",
+  "description": "MCP server for MarineTraffic vessel tracking",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "postbuild": "chmod +x build/index.js",
+    "start": "node build/index.js",
+    "dev": "ts-node --esm src/index.ts"
+  },
+  "keywords": [
+    "mcp",
+    "marinetraffic",
+    "vessel",
+    "tracking",
+    "ships"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.1.0",
+    "@types/node": "^20.0.0",
+    "axios": "^1.6.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}
