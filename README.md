@@ -146,15 +146,15 @@ Once the server is configured and running, you can use it with Claude to access 
 </access_mcp_resource>
 ```
 
-## Screenshots
+## API Key Limitations
 
-![MarineTraffic Vessel Tracking](https://i.imgur.com/JGqLhZW.png)
+The MarineTraffic API has usage limits based on your subscription plan. Be aware of these limits when using the server to avoid exceeding your quota.
 
-_Example of vessel tracking visualization from MarineTraffic platform_
+## Troubleshooting
 
-![Vessel Details](https://i.imgur.com/8XYZ1Aa.png)
-
-_Example of detailed vessel information available through the API_
+- **API Key Errors**: Ensure your MarineTraffic API key is valid and correctly set in the environment variables.
+- **Rate Limiting**: If you encounter rate limiting errors, the server will automatically retry with exponential backoff, but you may need to wait before making additional requests.
+  _Example of detailed vessel information available through the API_
 
 ## API Key Limitations
 
