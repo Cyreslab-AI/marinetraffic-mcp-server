@@ -1,4 +1,5 @@
 # MarineTraffic MCP Server
+[![smithery badge](https://smithery.ai/badge/@Cyreslab-AI/marinetraffic-mcp-server)](https://smithery.ai/server/@Cyreslab-AI/marinetraffic-mcp-server)
 
 A Model Context Protocol (MCP) server that provides access to MarineTraffic vessel tracking data.
 
@@ -19,6 +20,14 @@ This MCP server provides the following capabilities:
 - **vessels://area/{lat}/{lon}/{radius}**: List of vessels in a specified geographic area
 
 ## Installation
+
+### Installing via Smithery
+
+To install MarineTraffic Vessel Tracking Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@Cyreslab-AI/marinetraffic-mcp-server):
+
+```bash
+npx -y @smithery/cli install @Cyreslab-AI/marinetraffic-mcp-server --client claude
+```
 
 ### Prerequisites
 
