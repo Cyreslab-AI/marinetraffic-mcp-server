@@ -1,0 +1,19 @@
+# Smithery configuration file: https://smithery.ai/docs/build/project-config
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - marinetrafficApiKey
+    properties:
+      marinetrafficApiKey:
+        type: string
+        description: MarineTraffic API key for authentication
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'node', args: ['build/index.js'], env: { MARINETRAFFIC_API_KEY: config.marinetrafficApiKey } })
+  exampleConfig:
+    marinetrafficApiKey: YOUR_API_KEY_HERE
