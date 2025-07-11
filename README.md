@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/cyreslab-ai-marinetraffic-mcp-server-badge.png)](https://mseep.ai/app/cyreslab-ai-marinetraffic-mcp-server)
+
 # MarineTraffic MCP Server
 [![smithery badge](https://smithery.ai/badge/@Cyreslab-AI/marinetraffic-mcp-server)](https://smithery.ai/server/@Cyreslab-AI/marinetraffic-mcp-server)
 
