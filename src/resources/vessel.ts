@@ -1,4 +1,4 @@
-import { ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
+import { ProtocolError, ProtocolErrorCode } from "@modelcontextprotocol/server";
 import { MarineTrafficApiClient } from '../api-client.js';
 
 // Ship type mapping for human-readable vessel types (simplified version)
@@ -42,8 +42,8 @@ export async function getVesselResource(
     // Extract the vessel identifier from the URI
     const match = uri.match(/^vessel:\/\/([^/]+)$/);
     if (!match) {
-      throw new McpError(
-        ErrorCode.InvalidRequest,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidRequest,
         `Invalid vessel resource URI: ${uri}`
       );
     }
@@ -52,8 +52,8 @@ export async function getVesselResource(
 
     // Validate identifier format
     if (!/^\d{9}$/.test(identifier) && !/^IMO\d{7}$/.test(identifier) && !/^\d{7}$/.test(identifier)) {
-      throw new McpError(
-        ErrorCode.InvalidRequest,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidRequest,
         'Invalid vessel identifier. Must be a 9-digit MMSI number or IMO number (optionally prefixed with "IMO")'
       );
     }
@@ -76,8 +76,8 @@ export async function getVesselResource(
     ]);
 
     if (!position && !details) {
-      throw new McpError(
-        ErrorCode.InvalidRequest,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidRequest,
         `No data found for vessel with identifier: ${identifier}`
       );
     }
@@ -135,12 +135,12 @@ export async function getVesselResource(
 
     return JSON.stringify(vesselData, null, 2);
   } catch (error) {
-    if (error instanceof McpError) {
+    if (error instanceof ProtocolError) {
       throw error;
     }
 
-    throw new McpError(
-      ErrorCode.InternalError,
+    throw new ProtocolError(
+      ProtocolErrorCode.InternalError,
       `Error retrieving vessel resource: ${(error as Error).message}`
     );
   }

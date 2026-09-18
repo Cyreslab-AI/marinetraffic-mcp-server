@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import { ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
+import { ProtocolError, ProtocolErrorCode } from "@modelcontextprotocol/server";
 
 // MarineTraffic API endpoints
 export const ENDPOINTS = {
@@ -78,7 +78,7 @@ export class MarineTrafficApiClient {
 
   constructor(apiKey: string) {
     if (!apiKey) {
-      throw new McpError(ErrorCode.InvalidParams, ERROR_MESSAGES.MISSING_API_KEY);
+      throw new ProtocolError(ProtocolErrorCode.InvalidParams, ERROR_MESSAGES.MISSING_API_KEY);
     }
 
     this.apiKey = apiKey;
@@ -125,17 +125,17 @@ export class MarineTrafficApiClient {
 
         // Handle authentication errors
         if (axiosError.response?.status === 401) {
-          throw new McpError(ErrorCode.InvalidRequest, ERROR_MESSAGES.INVALID_API_KEY);
+          throw new ProtocolError(ProtocolErrorCode.InvalidRequest, ERROR_MESSAGES.INVALID_API_KEY);
         }
 
         // Handle other API errors
         if (axiosError.response) {
-          throw new McpError(
-            ErrorCode.InternalError,
+          throw new ProtocolError(
+            ProtocolErrorCode.InternalError,
             `${ERROR_MESSAGES.API_ERROR}: ${axiosError.response.status} - ${axiosError.response.data}`
           );
         } else {
-          throw new McpError(ErrorCode.InternalError, ERROR_MESSAGES.NETWORK_ERROR);
+          throw new ProtocolError(ProtocolErrorCode.InternalError, ERROR_MESSAGES.NETWORK_ERROR);
         }
       }
 

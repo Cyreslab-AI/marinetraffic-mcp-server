@@ -1,4 +1,4 @@
-import { ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
+import { ProtocolError, ProtocolErrorCode } from "@modelcontextprotocol/server";
 import { AreaParams, MarineTrafficApiClient, VesselPosition } from '../api-client.js';
 
 // Ship type mapping for human-readable vessel types (simplified version)
@@ -42,8 +42,8 @@ export async function getVesselsAreaResource(
     // Extract the area parameters from the URI
     const match = uri.match(/^vessels:\/\/area\/([^/]+)\/([^/]+)\/([^/]+)$/);
     if (!match) {
-      throw new McpError(
-        ErrorCode.InvalidRequest,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidRequest,
         `Invalid vessels area resource URI: ${uri}`
       );
     }
@@ -54,23 +54,23 @@ export async function getVesselsAreaResource(
 
     // Validate coordinates
     if (isNaN(latitude) || latitude < -90 || latitude > 90) {
-      throw new McpError(
-        ErrorCode.InvalidRequest,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidRequest,
         'Invalid latitude. Must be a number between -90 and 90'
       );
     }
 
     if (isNaN(longitude) || longitude < -180 || longitude > 180) {
-      throw new McpError(
-        ErrorCode.InvalidRequest,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidRequest,
         'Invalid longitude. Must be a number between -180 and 180'
       );
     }
 
     // Validate radius
     if (isNaN(radius) || radius < 1 || radius > 100) {
-      throw new McpError(
-        ErrorCode.InvalidRequest,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidRequest,
         'Invalid radius. Must be a number between 1 and 100 nautical miles'
       );
     }
@@ -101,12 +101,12 @@ export async function getVesselsAreaResource(
 
     return JSON.stringify(response, null, 2);
   } catch (error) {
-    if (error instanceof McpError) {
+    if (error instanceof ProtocolError) {
       throw error;
     }
 
-    throw new McpError(
-      ErrorCode.InternalError,
+    throw new ProtocolError(
+      ProtocolErrorCode.InternalError,
       `Error retrieving vessels in area: ${(error as Error).message}`
     );
   }

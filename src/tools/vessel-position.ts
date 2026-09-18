@@ -1,4 +1,4 @@
-import { ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
+import { ProtocolError, ProtocolErrorCode } from "@modelcontextprotocol/server";
 import { MarineTrafficApiClient } from '../api-client.js';
 
 export const getVesselPositionToolSchema = {
@@ -25,8 +25,8 @@ export async function getVesselPositionTool(
 
     // Validate identifier format
     if (!/^\d{9}$/.test(identifier) && !/^IMO\d{7}$/.test(identifier)) {
-      throw new McpError(
-        ErrorCode.InvalidParams,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidParams,
         'Invalid vessel identifier. Must be a 9-digit MMSI number or IMO number (format: IMO1234567)'
       );
     }
@@ -65,12 +65,12 @@ export async function getVesselPositionTool(
       ],
     };
   } catch (error) {
-    if (error instanceof McpError) {
+    if (error instanceof ProtocolError) {
       throw error;
     }
 
-    throw new McpError(
-      ErrorCode.InternalError,
+    throw new ProtocolError(
+      ProtocolErrorCode.InternalError,
       `Error retrieving vessel position: ${(error as Error).message}`
     );
   }

@@ -1,16 +1,6 @@
 #!/usr/bin/env node
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequestSchema,
-  ErrorCode,
-  ListResourcesRequestSchema,
-  ListResourceTemplatesRequestSchema,
-  ListToolsRequestSchema,
-  McpError,
-  ReadResourceRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
-
+import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
+import { Server, ProtocolError, ProtocolErrorCode } from "@modelcontextprotocol/server";
 import { MarineTrafficApiClient } from './api-client.js';
 import { getVesselPositionTool, getVesselPositionToolSchema } from './tools/vessel-position.js';
 import { getVesselDetailsTool, getVesselDetailsToolSchema } from './tools/vessel-details.js';
@@ -51,8 +41,8 @@ class MarineTrafficServer {
     if (!this.apiClient) {
       const apiKey = process.env.MARINETRAFFIC_API_KEY;
       if (!apiKey) {
-        throw new McpError(
-          ErrorCode.InvalidRequest,
+        throw new ProtocolError(
+          ProtocolErrorCode.InvalidRequest,
           'MARINETRAFFIC_API_KEY environment variable is required'
         );
       }
@@ -63,7 +53,7 @@ class MarineTrafficServer {
 
   private setupHandlers() {
     // List available tools
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
+    this.server.setRequestHandler('tools/list', async (): Promise<any> => ({
       tools: [
         getVesselPositionToolSchema,
         getVesselDetailsToolSchema,
@@ -73,7 +63,7 @@ class MarineTrafficServer {
     }));
 
     // Handle tool calls
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    this.server.setRequestHandler('tools/call', async (request): Promise<any> => {
       const apiClient = this.getApiClient();
 
       switch (request.params.name) {
@@ -96,15 +86,15 @@ class MarineTrafficServer {
           });
 
         default:
-          throw new McpError(
-            ErrorCode.MethodNotFound,
+          throw new ProtocolError(
+            ProtocolErrorCode.MethodNotFound,
             `Unknown tool: ${request.params.name}`
           );
       }
     });
 
     // List resource templates
-    this.server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => ({
+    this.server.setRequestHandler('resources/templates/list', async () => ({
       resourceTemplates: [
         vesselResourceTemplate,
         vesselsAreaResourceTemplate,
@@ -112,12 +102,12 @@ class MarineTrafficServer {
     }));
 
     // List static resources (none in this implementation)
-    this.server.setRequestHandler(ListResourcesRequestSchema, async () => ({
+    this.server.setRequestHandler('resources/list', async () => ({
       resources: [],
     }));
 
     // Handle resource requests
-    this.server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+    this.server.setRequestHandler('resources/read', async (request) => {
       const apiClient = this.getApiClient();
       const uri = request.params.uri;
 
@@ -128,8 +118,8 @@ class MarineTrafficServer {
       } else if (uri.startsWith('vessels://area/')) {
         content = await getVesselsAreaResource(apiClient, uri);
       } else {
-        throw new McpError(
-          ErrorCode.InvalidRequest,
+        throw new ProtocolError(
+          ProtocolErrorCode.InvalidRequest,
           `Unsupported resource URI: ${uri}`
         );
       }

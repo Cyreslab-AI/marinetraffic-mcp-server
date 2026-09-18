@@ -1,4 +1,4 @@
-import { ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
+import { ProtocolError, ProtocolErrorCode } from "@modelcontextprotocol/server";
 import { MarineTrafficApiClient, SearchParams, VesselPosition } from '../api-client.js';
 
 export const searchVesselsToolSchema = {
@@ -66,24 +66,24 @@ export async function searchVesselsTool(
   try {
     // Validate at least one search parameter is provided
     if (!args.vessel_name && !args.mmsi && !args.imo && !args.ship_type) {
-      throw new McpError(
-        ErrorCode.InvalidParams,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidParams,
         'At least one search parameter (vessel_name, mmsi, imo, or ship_type) must be provided'
       );
     }
 
     // Validate MMSI format if provided
     if (args.mmsi && !/^\d{9}$/.test(args.mmsi)) {
-      throw new McpError(
-        ErrorCode.InvalidParams,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidParams,
         'Invalid MMSI number. Must be a 9-digit number'
       );
     }
 
     // Validate IMO format if provided
     if (args.imo && !/^IMO\d{7}$/.test(args.imo) && !/^\d{7}$/.test(args.imo)) {
-      throw new McpError(
-        ErrorCode.InvalidParams,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidParams,
         'Invalid IMO number. Must be a 7-digit number, optionally prefixed with "IMO"'
       );
     }
@@ -110,12 +110,12 @@ export async function searchVesselsTool(
       ],
     };
   } catch (error) {
-    if (error instanceof McpError) {
+    if (error instanceof ProtocolError) {
       throw error;
     }
 
-    throw new McpError(
-      ErrorCode.InternalError,
+    throw new ProtocolError(
+      ProtocolErrorCode.InternalError,
       `Error searching for vessels: ${(error as Error).message}`
     );
   }

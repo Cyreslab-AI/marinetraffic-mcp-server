@@ -1,4 +1,4 @@
-import { ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
+import { ProtocolError, ProtocolErrorCode } from "@modelcontextprotocol/server";
 import { AreaParams, MarineTrafficApiClient, VesselPosition } from '../api-client.js';
 
 export const getVesselsInAreaToolSchema = {
@@ -79,23 +79,23 @@ export async function getVesselsInAreaTool(
 
     // Validate coordinates
     if (latitude < -90 || latitude > 90) {
-      throw new McpError(
-        ErrorCode.InvalidParams,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidParams,
         'Invalid latitude. Must be between -90 and 90'
       );
     }
 
     if (longitude < -180 || longitude > 180) {
-      throw new McpError(
-        ErrorCode.InvalidParams,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidParams,
         'Invalid longitude. Must be between -180 and 180'
       );
     }
 
     // Validate radius
     if (radius < 1 || radius > 100) {
-      throw new McpError(
-        ErrorCode.InvalidParams,
+      throw new ProtocolError(
+        ProtocolErrorCode.InvalidParams,
         'Invalid radius. Must be between 1 and 100 nautical miles'
       );
     }
@@ -138,12 +138,12 @@ export async function getVesselsInAreaTool(
       ],
     };
   } catch (error) {
-    if (error instanceof McpError) {
+    if (error instanceof ProtocolError) {
       throw error;
     }
 
-    throw new McpError(
-      ErrorCode.InternalError,
+    throw new ProtocolError(
+      ProtocolErrorCode.InternalError,
       `Error retrieving vessels in area: ${(error as Error).message}`
     );
   }
