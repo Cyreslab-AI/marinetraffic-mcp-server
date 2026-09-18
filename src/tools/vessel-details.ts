@@ -14,6 +14,85 @@ export const getVesselDetailsToolSchema = {
     },
     required: ['identifier'],
   },
+  outputSchema: {
+    type: 'object',
+    properties: {
+      mmsi: {
+        type: 'string',
+        description: 'MMSI number of the vessel',
+      },
+      imo: {
+        type: 'string',
+        description: 'IMO number of the vessel, or "N/A" if unavailable',
+      },
+      name: {
+        type: 'string',
+        description: 'Name of the vessel',
+      },
+      vessel_type: {
+        type: 'object',
+        properties: {
+          code: {
+            type: 'number',
+            description: 'Numeric ship type code',
+          },
+          name: {
+            type: 'string',
+            description: 'Human-readable ship type name',
+          },
+        },
+        required: ['code', 'name'],
+      },
+      callsign: {
+        type: 'string',
+        description: 'Radio callsign, or "N/A" if unavailable',
+      },
+      flag: {
+        type: 'string',
+        description: 'Flag state, or "N/A" if unavailable',
+      },
+      dimensions: {
+        type: 'object',
+        properties: {
+          length_overall: {
+            type: 'string',
+            description: 'Length overall with unit (e.g. "200 m"), or "N/A"',
+          },
+          breadth_extreme: {
+            type: 'string',
+            description: 'Breadth extreme with unit (e.g. "30 m"), or "N/A"',
+          },
+        },
+        required: ['length_overall', 'breadth_extreme'],
+      },
+      tonnage: {
+        type: 'object',
+        properties: {
+          gross: {
+            type: 'string',
+            description: 'Gross tonnage with unit (e.g. "50000 GT"), or "N/A"',
+          },
+          summer_dwt: {
+            type: 'string',
+            description: 'Summer deadweight tonnage with unit (e.g. "80000 t"), or "N/A"',
+          },
+        },
+        required: ['gross', 'summer_dwt'],
+      },
+      year_built: {
+        description: 'Year the vessel was built (number), or "N/A" if unavailable',
+      },
+      home_port: {
+        type: 'string',
+        description: 'Home port, or "N/A" if unavailable',
+      },
+    },
+    required: ['mmsi', 'imo', 'name', 'vessel_type', 'callsign', 'flag', 'dimensions', 'tonnage', 'year_built', 'home_port'],
+  },
+  annotations: {
+    readOnlyHint: true,
+    openWorldHint: true,
+  },
 };
 
 // Ship type mapping for human-readable vessel types
@@ -182,6 +261,7 @@ export async function getVesselDetailsTool(
           text: JSON.stringify(formattedResponse, null, 2),
         },
       ],
+      structuredContent: formattedResponse,
     };
   } catch (error) {
     if (error instanceof ProtocolError) {

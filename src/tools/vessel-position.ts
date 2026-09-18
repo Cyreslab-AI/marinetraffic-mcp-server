@@ -14,6 +14,70 @@ export const getVesselPositionToolSchema = {
     },
     required: ['identifier'],
   },
+  outputSchema: {
+    type: 'object',
+    properties: {
+      mmsi: {
+        type: 'string',
+        description: 'MMSI number of the vessel',
+      },
+      imo: {
+        type: 'string',
+        description: 'IMO number of the vessel, or "N/A" if unavailable',
+      },
+      name: {
+        type: 'string',
+        description: 'Name of the vessel, or "Unknown" if unavailable',
+      },
+      position: {
+        type: 'object',
+        properties: {
+          latitude: {
+            type: 'number',
+            description: 'Latitude of the vessel position',
+          },
+          longitude: {
+            type: 'number',
+            description: 'Longitude of the vessel position',
+          },
+        },
+        required: ['latitude', 'longitude'],
+      },
+      speed: {
+        type: 'string',
+        description: 'Speed over ground with unit (e.g. "12 knots")',
+      },
+      course: {
+        type: 'string',
+        description: 'Course over ground in degrees, or "N/A"',
+      },
+      heading: {
+        type: 'string',
+        description: 'True heading in degrees, or "N/A"',
+      },
+      status: {
+        type: 'string',
+        description: 'Navigational status, or "Unknown"',
+      },
+      last_update: {
+        type: 'string',
+        description: 'ISO 8601 timestamp of the last position update',
+      },
+      destination: {
+        type: 'string',
+        description: 'Reported destination, or "Unknown"',
+      },
+      eta: {
+        type: 'string',
+        description: 'Reported estimated time of arrival, or "Unknown"',
+      },
+    },
+    required: ['mmsi', 'imo', 'name', 'position', 'speed', 'course', 'heading', 'status', 'last_update', 'destination', 'eta'],
+  },
+  annotations: {
+    readOnlyHint: true,
+    openWorldHint: true,
+  },
 };
 
 export async function getVesselPositionTool(
@@ -63,6 +127,7 @@ export async function getVesselPositionTool(
           text: JSON.stringify(formattedResponse, null, 2),
         },
       ],
+      structuredContent: formattedResponse,
     };
   } catch (error) {
     if (error instanceof ProtocolError) {

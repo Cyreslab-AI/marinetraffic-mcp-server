@@ -36,6 +36,108 @@ export const getVesselsInAreaToolSchema = {
     },
     required: ['latitude', 'longitude', 'radius'],
   },
+  outputSchema: {
+    type: 'object',
+    properties: {
+      area: {
+        type: 'object',
+        properties: {
+          center: {
+            type: 'object',
+            properties: {
+              latitude: {
+                type: 'number',
+                description: 'Center latitude of the queried area',
+              },
+              longitude: {
+                type: 'number',
+                description: 'Center longitude of the queried area',
+              },
+            },
+            required: ['latitude', 'longitude'],
+          },
+          radius: {
+            type: 'string',
+            description: 'Radius of the queried area with unit (e.g. "50 nautical miles")',
+          },
+        },
+        required: ['center', 'radius'],
+      },
+      count: {
+        type: 'number',
+        description: 'Number of vessels found in the area',
+      },
+      vessels: {
+        type: 'array',
+        description: 'Vessels found in the area',
+        items: {
+          type: 'object',
+          properties: {
+            mmsi: {
+              type: 'string',
+              description: 'MMSI number of the vessel',
+            },
+            imo: {
+              type: 'string',
+              description: 'IMO number of the vessel, or "N/A" if unavailable',
+            },
+            name: {
+              type: 'string',
+              description: 'Name of the vessel, or "Unknown" if unavailable',
+            },
+            position: {
+              type: 'object',
+              properties: {
+                latitude: {
+                  type: 'number',
+                  description: 'Latitude of the vessel position',
+                },
+                longitude: {
+                  type: 'number',
+                  description: 'Longitude of the vessel position',
+                },
+              },
+              required: ['latitude', 'longitude'],
+            },
+            speed: {
+              type: 'string',
+              description: 'Speed over ground with unit (e.g. "12 knots")',
+            },
+            course: {
+              type: 'string',
+              description: 'Course over ground in degrees, or "N/A"',
+            },
+            status: {
+              type: 'string',
+              description: 'Navigational status, or "Unknown"',
+            },
+            type: {
+              type: 'string',
+              description: 'Ship type code and human-readable name, or "Unknown"',
+            },
+            destination: {
+              type: 'string',
+              description: 'Reported destination, or "Unknown"',
+            },
+            eta: {
+              type: 'string',
+              description: 'Reported estimated time of arrival, or "Unknown"',
+            },
+            last_update: {
+              type: 'string',
+              description: 'ISO 8601 timestamp of the last position update',
+            },
+          },
+          required: ['mmsi', 'imo', 'name', 'position', 'speed', 'course', 'status', 'type', 'destination', 'eta', 'last_update'],
+        },
+      },
+    },
+    required: ['area', 'count', 'vessels'],
+  },
+  annotations: {
+    readOnlyHint: true,
+    openWorldHint: true,
+  },
 };
 
 // Ship type mapping for human-readable vessel types (simplified version)
@@ -118,24 +220,26 @@ export async function getVesselsInAreaTool(
 
     // Format the response
     const formattedVessels = vessels.map(vessel => formatVesselData(vessel));
+    const result = {
+      area: {
+        center: {
+          latitude,
+          longitude,
+        },
+        radius: `${radius} nautical miles`,
+      },
+      count: formattedVessels.length,
+      vessels: formattedVessels,
+    };
 
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify({
-            area: {
-              center: {
-                latitude,
-                longitude,
-              },
-              radius: `${radius} nautical miles`,
-            },
-            count: formattedVessels.length,
-            vessels: formattedVessels,
-          }, null, 2),
+          text: JSON.stringify(result, null, 2),
         },
       ],
+      structuredContent: result,
     };
   } catch (error) {
     if (error instanceof ProtocolError) {
