@@ -6,8 +6,11 @@ import { getVesselPositionTool, getVesselPositionToolSchema } from './tools/vess
 import { getVesselDetailsTool, getVesselDetailsToolSchema } from './tools/vessel-details.js';
 import { searchVesselsTool, searchVesselsToolSchema } from './tools/vessel-search.js';
 import { getVesselsInAreaTool, getVesselsInAreaToolSchema } from './tools/vessels-in-area.js';
+import { getPortCallsTool, getPortCallsToolSchema } from './tools/port-calls.js';
+import { getVoyageForecastTool, getVoyageForecastToolSchema } from './tools/voyage-forecast.js';
 import { getVesselResource, vesselResourceTemplate } from './resources/vessel.js';
 import { getVesselsAreaResource, vesselsAreaResourceTemplate } from './resources/vessels-area.js';
+import { getPortResource, portResourceTemplate } from './resources/port.js';
 
 class MarineTrafficServer {
   private server: Server;
@@ -59,6 +62,8 @@ class MarineTrafficServer {
         getVesselDetailsToolSchema,
         searchVesselsToolSchema,
         getVesselsInAreaToolSchema,
+        getPortCallsToolSchema,
+        getVoyageForecastToolSchema,
       ],
     }));
 
@@ -85,6 +90,23 @@ class MarineTrafficServer {
             max_ship_type?: number;
           });
 
+        case 'get_port_calls':
+          return getPortCallsTool(apiClient, request.params.arguments as {
+            identifier: string;
+            timespan?: number;
+            movetype?: 'arrival' | 'departure';
+            exclude_intransit?: boolean;
+            fromdate?: string;
+            todate?: string;
+            extended?: boolean;
+          });
+
+        case 'get_voyage_forecast':
+          return getVoyageForecastTool(apiClient, request.params.arguments as {
+            identifier: string;
+            extended?: boolean;
+          });
+
         default:
           throw new ProtocolError(
             ProtocolErrorCode.MethodNotFound,
@@ -98,6 +120,7 @@ class MarineTrafficServer {
       resourceTemplates: [
         vesselResourceTemplate,
         vesselsAreaResourceTemplate,
+        portResourceTemplate,
       ],
     }));
 
@@ -117,6 +140,8 @@ class MarineTrafficServer {
         content = await getVesselResource(apiClient, uri);
       } else if (uri.startsWith('vessels://area/')) {
         content = await getVesselsAreaResource(apiClient, uri);
+      } else if (uri.startsWith('port://')) {
+        content = await getPortResource(apiClient, uri);
       } else {
         throw new ProtocolError(
           ProtocolErrorCode.InvalidRequest,

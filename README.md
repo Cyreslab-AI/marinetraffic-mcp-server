@@ -13,11 +13,14 @@ This MCP server provides the following capabilities:
 - **get_vessel_details**: Get detailed information about a vessel by MMSI or IMO number
 - **search_vessels**: Search for vessels by name, MMSI, IMO, or vessel type
 - **get_vessels_in_area**: Get vessels in a specified geographic area
+- **get_port_calls**: Get arrival/departure port call history for a vessel by MMSI or IMO number (data available for dates after 2015-01-16)
+- **get_voyage_forecast**: Get the machine-learning voyage forecast for a vessel by MMSI or IMO number — predicted next port and ETA, combining live AIS position with historical routing
 
 ### Resources
 
 - **vessel://{identifier}**: Information about a vessel by MMSI or IMO number
 - **vessels://area/{lat}/{lon}/{radius}**: List of vessels in a specified geographic area
+- **port://{port_id}**: Recent arrival/departure port calls for a port, by MarineTraffic port ID or UN/LOCODE
 
 ## Installation
 
@@ -155,14 +158,50 @@ Once the server is configured and running, you can use it with Claude to access 
 </access_mcp_resource>
 ```
 
+### Get Port Call History
+
+```
+<use_mcp_tool>
+<server_name>marinetraffic</server_name>
+<tool_name>get_port_calls</tool_name>
+<arguments>
+{
+  "identifier": "123456789",
+  "movetype": "arrival",
+  "extended": true
+}
+</arguments>
+</use_mcp_tool>
+```
+
+### Get Voyage Forecast (Predicted ETA)
+
+```
+<use_mcp_tool>
+<server_name>marinetraffic</server_name>
+<tool_name>get_voyage_forecast</tool_name>
+<arguments>
+{
+  "identifier": "123456789"
+}
+</arguments>
+</use_mcp_tool>
+```
+
+### Access Port Activity Resource
+
+```
+<access_mcp_resource>
+<server_name>marinetraffic</server_name>
+<uri>port://22541</uri>
+</access_mcp_resource>
+```
+
 ## API Key Limitations
 
 The MarineTraffic API has usage limits based on your subscription plan. Be aware of these limits when using the server to avoid exceeding your quota.
 
-## Troubleshooting
-
-- **API Key Errors**: Ensure your MarineTraffic API key is valid and correctly set in the environment variables.
-- **Rate Limiting**: If you encounter rate limiting errors, the server will automatically retry with exponential backoff, but you may need to wait before making additional requests.
+`get_port_calls` and `get_voyage_forecast` call MarineTraffic's **Single Vessel Port Calls** and **Single Vessel Voyage Forecast** services (from the [AIS Data API Reference](https://servicedocs.marinetraffic.com/)). These are separate, individually-priced services in MarineTraffic's [API catalog](https://www.marinetraffic.com/en/ais-api-services) — your key needs those specific services enabled, not just basic vessel positions, or calls to these two tools will fail even with an otherwise-valid key.
   _Example of detailed vessel information available through the API_
 
 ## API Key Limitations
