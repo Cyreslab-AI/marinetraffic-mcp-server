@@ -7,11 +7,9 @@ WORKDIR /app
 COPY package.json package-lock.json tsconfig.json ./
 COPY src ./src
 
-# Fix dependency version mismatch
-RUN sed -i 's/"@modelcontextprotocol\/sdk":.*$/"@modelcontextprotocol\/sdk": "^1.8.0",/' package.json
-
-# Install dependencies and build
-RUN npm install --ignore-scripts && npm run build
+# Install dependencies and build (package.json/package-lock.json are the
+# single source of truth for dependencies - no build-time patching)
+RUN npm ci --ignore-scripts && npm run build
 
 # Default command: stdio server
 CMD ["node", "build/index.js"]
